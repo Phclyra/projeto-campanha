@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gastos de campanha e votos em Pernambuco | Painel do projeto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<script>tailwind.config = { darkMode: 'class' }</script>
+<style>
+  :root{--bg:#EEEFEA;--surface:#FAFAF7;--ink:#161C2B;--mute:#5A6275;--line:#D5D7CF;--blue:#1D4E9E;--yellow:#F2B705;--onblue:#fff}
+  .dark{--bg:#10141F;--surface:#181E2E;--ink:#ECEEF4;--mute:#9AA3B8;--line:#2B3347;--blue:#7FA6FF;--onblue:#10141F}
+  html{scroll-behavior:smooth;scroll-padding-top:72px}
+  body{background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans',system-ui,sans-serif;line-height:1.6}
+  h1,h2,h3,.disp{font-family:'Bricolage Grotesque','IBM Plex Sans',system-ui,sans-serif;letter-spacing:-.02em}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:14px}
+  .mute{color:var(--mute)}
+  .bar{height:10px;background:var(--line);border-radius:99px;overflow:hidden}
+  .bar>i{display:block;height:100%;width:0;background:var(--blue);border-radius:99px;transition:width .35s}
+  .bar.full>i{background:var(--yellow)}
+  .btn{border:1px solid var(--line);border-radius:10px;padding:.45rem .9rem;font-weight:500;background:var(--surface);cursor:pointer}
+  .btn:hover{border-color:var(--blue)}
+  .btn-main{background:var(--blue);color:var(--onblue);border-color:var(--blue)}
+  .field{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:.5rem .75rem;color:var(--ink)}
+  .task{display:flex;gap:.7rem;align-items:flex-start;padding:.45rem 0;cursor:pointer}
+  .task input{margin-top:.35rem;width:1.1rem;height:1.1rem;accent-color:var(--blue);flex:none}
+  .task input:checked+span{text-decoration:line-through;color:var(--mute)}
+  .week.now{border-color:var(--blue);box-shadow:inset 0 4px 0 var(--yellow)}
+  a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--yellow);outline-offset:2px}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.bar>i{transition:none}}
+</style>
+</head>
+<body>
+
+<header class="sticky top-0 z-20 border-b" style="background:var(--surface);border-color:var(--line)">
+  <div class="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between gap-4">
+    <a href="#topo" class="disp font-bold">Projeto Final</a>
+    <nav class="flex items-center gap-4 text-sm overflow-x-auto">
+      <a href="#resumo" class="hover:underline">Resumo</a>
+      <a href="#equipe" class="hover:underline">Equipe</a>
+      <a href="#cronograma" class="hover:underline">Cronograma</a>
+      <a href="#atualizacoes" class="hover:underline">Atualizações</a>
+      <button id="tema" class="btn" aria-label="Alternar tema claro e escuro">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main id="topo" class="max-w-5xl mx-auto px-4 py-10 space-y-16">
+
+  <!-- Hero -->
+  <section>
+    <p class="mute mb-3">Big Data · Dados abertos do TSE · Python e Pandas</p>
+    <h1 class="text-4xl sm:text-6xl font-extrabold leading-[1.05] max-w-3xl">Quem gasta mais na campanha recebe mais votos?</h1>
+    <p class="mute mt-4 max-w-2xl text-lg">Painel de acompanhamento do projeto “Gastos de campanha e votos em Pernambuco”. Marque as tarefas, registre o andamento e veja o progresso do grupo.</p>
+    <div class="card p-5 mt-8">
+      <div class="flex items-end justify-between mb-3">
+        <h2 class="text-lg font-bold">Progresso do grupo</h2>
+        <p class="disp text-4xl font-extrabold" id="pctGeral">0%</p>
+      </div>
+      <div class="bar" id="barGeral"><i></i></div>
+      <div id="segmentos" class="grid sm:grid-cols-4 gap-4 mt-5"></div>
+    </div>
+  </section>
+
+  <!-- Resumo -->
+  <section id="resumo" class="grid md:grid-cols-2 gap-8">
+    <div>
+      <h2 class="text-3xl font-bold mb-3">O que o projeto faz</h2>
+      <p>Analisamos dados públicos do Tribunal Superior Eleitoral (TSE) com Python e Pandas para responder à pergunta: <strong>candidatos que gastam mais na campanha recebem mais votos?</strong></p>
+      <p class="mt-3 mute">Cruzamos o que cada candidato gastou e arrecadou com os votos que recebeu em Pernambuco. Correlação não prova causa, e o relatório vai deixar isso claro.</p>
+    </div>
+    <div>
+      <h3 class="text-xl font-bold mb-3">Etapas</h3>
+      <ol class="space-y-3" id="etapas"></ol>
+    </div>
+  </section>
+
+  <!-- Equipe -->
+  <section id="equipe">
+    <h2 class="text-3xl font-bold mb-1">Equipe e tarefas</h2>
+    <p class="mute mb-6">Escreva o nome de cada integrante no campo do cartão. Marque cada tarefa ao concluir.</p>
+    <div class="grid md:grid-cols-2 gap-5" id="time"></div>
+  </section>
+
+  <!-- Cronograma -->
+  <section id="cronograma">
+    <h2 class="text-3xl font-bold mb-1">Cronograma de 3 semanas</h2>
+    <p class="mute mb-6">Clique em “Estamos aqui” para marcar a semana atual.</p>
+    <div class="grid md:grid-cols-3 gap-5" id="semanas"></div>
+  </section>
+
+  <!-- Atualizações -->
+  <section id="atualizacoes">
+    <h2 class="text-3xl font-bold mb-1">Atualizações rápidas</h2>
+    <p class="mute mb-6">Deixe uma nota sobre o andamento, por exemplo: “Filtro de Pernambuco aplicado com sucesso no Pandas”.</p>
+    <div class="card p-5">
+      <div class="grid sm:grid-cols-[200px_1fr_auto] gap-3">
+        <select id="autor" class="field" aria-label="Autor da nota"></select>
+        <input id="texto" class="field" maxlength="280" placeholder="O que foi feito?" aria-label="Texto da atualização">
+        <button id="publicar" class="btn btn-main">Publicar nota</button>
+      </div>
+      <ul id="notas" class="mt-5 divide-y" style="--tw-divide-opacity:1"></ul>
+      <p id="vazio" class="mute text-center py-6">Nenhuma nota ainda. Publique a primeira atualização do grupo.</p>
+    </div>
+    <div class="card p-5 mt-5 flex flex-wrap items-center gap-3">
+      <p class="mute flex-1 min-w-[240px] text-sm">Os dados ficam salvos neste navegador. Para compartilhar o andamento com o grupo, exporte o arquivo e envie; quem receber importa no próprio navegador.</p>
+      <button id="exportar" class="btn">Exportar progresso</button>
+      <label class="btn cursor-pointer">Importar progresso<input id="importar" type="file" accept="application/json" class="hidden"></label>
+      <button id="zerar" class="btn">Zerar tudo</button>
+    </div>
+  </section>
+</main>
+
+<footer class="border-t py-8 text-center text-sm mute" style="border-color:var(--line)">
+  Fonte dos dados: Portal de Dados Abertos do TSE (dadosabertos.tse.jus.br)
+</footer>
+
+<script>
+const TEAM = [
+  { papel: 'Coordenação, GitHub e infraestrutura', itens: [
+    'Criar e gerenciar o repositório no GitHub',
+    'Organizar a estrutura de pastas (dados, scripts, resultados)',
+    'Escrever o README explicativo',
+    'Fazer o script inicial de download dos dados do TSE' ] },
+  { papel: 'Limpeza, tratamento e junção das bases', itens: [
+    'Abrir as bases de candidatos, votação, receitas e despesas com Pandas',
+    'Tratar valores vazios',
+    'Padronizar textos e nomes de municípios',
+    'Somar receitas e despesas por candidato',
+    'Fazer o cruzamento (merge) na tabela unificada final' ] },
+  { papel: 'Indicadores e análises estatísticas', itens: [
+    'Calcular o custo por voto',
+    'Comparar gastos de eleitos e não eleitos',
+    'Calcular a correlação entre gastos e votos',
+    'Segmentar candidatos por faixa de gasto',
+    'Identificar outliers' ] },
+  { papel: 'Visualização, relatório e justificativa', itens: [
+    'Desenvolver de 4 a 6 gráficos claros',
+    'Pesquisar bibliografia de ciência política',
+    'Redigir a justificativa social da pesquisa',
+    'Montar a apresentação (slides)' ] }
+];
+const SEMANAS = [
+  { foco: 'Dados prontos', itens: ['Repositório criado', 'Arquivos do TSE baixados', 'Limpeza das bases concluída', 'Início da pesquisa bibliográfica'] },
+  { foco: 'Resultados', itens: ['Tabela final unificada', 'Indicadores calculados', 'Gráficos prontos', 'Cada integrante começa a redigir sua parte do relatório'] },
+  { foco: 'Fechamento', itens: ['Relatório unificado compilado', 'Publicação no GitHub', 'Slides finalizados', 'Ensaio geral da apresentação'] }
+];
+const ETAPAS = [
+  'Baixar os dados abertos do TSE',
+  'Limpar e tratar as bases (candidatos, votação, receitas e despesas)',
+  'Juntar as tabelas',
+  'Calcular indicadores: custo por voto, correlação e grupos de gasto',
+  'Gerar os gráficos',
+  'Publicar tudo no GitHub'
+];
+
+const KEY = 'painel-projeto-eleicoes-v1';
+const base = () => ({ nomes: ['', '', '', ''], feitas: {}, notas: [], semana: 1 });
+let S = base();
+try { const r = localStorage.getItem(KEY); if (r) S = Object.assign(base(), JSON.parse(r)); } catch (e) {}
+const salvar = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
+const $ = s => document.querySelector(s);
+const nome = i => (S.nomes[i] || '').trim() || `Integrante ${i + 1}`;
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+function contagem(i) {
+  const total = TEAM[i].itens.length;
+  let ok = 0;
+  for (let j = 0; j < total; j++) if (S.feitas[`${i}-${j}`]) ok++;
+  return { ok, total, pct: Math.round(ok / total * 100) };
+}
+function setBar(el, pct) {
+  el.classList.toggle('full', pct === 100);
+  el.firstElementChild.style.width = pct + '%';
+}
+
+function renderProgresso() {
+  let ok = 0, total = 0;
+  $('#segmentos').innerHTML = TEAM.map((_, i) => {
+    const c = contagem(i); ok += c.ok; total += c.total;
+    return `<div><div class="flex justify-between text-sm mb-1"><span class="font-medium truncate pr-2">${esc(nome(i))}</span><span class="mute">${c.pct}%</span></div><div class="bar ${c.pct === 100 ? 'full' : ''}"><i style="width:${c.pct}%"></i></div></div>`;
+  }).join('');
+  const g = Math.round(ok / total * 100);
+  $('#pctGeral').textContent = g + '%';
+  setBar($('#barGeral'), g);
+  TEAM.forEach((_, i) => {
+    const c = contagem(i);
+    const b = $(`#bar${i}`);
+    if (b) { setBar(b, c.pct); $(`#cont${i}`).textContent = `${c.ok} de ${c.total} tarefas`; }
+  });
+}
+
+function renderEtapas() {
+  $('#etapas').innerHTML = ETAPAS.map((e, i) =>
+    `<li class="flex gap-3"><span class="disp font-bold w-7 h-7 rounded-full flex items-center justify-center flex-none text-sm" style="background:var(--yellow);color:#161C2B">${i + 1}</span><span>${esc(e)}</span></li>`).join('');
+}
+
+function renderTime() {
+  $('#time').innerHTML = TEAM.map((m, i) => `
+    <article class="card p-5">
+      <label class="text-sm mute" for="nome${i}">Integrante ${i + 1}</label>
+      <input id="nome${i}" data-i="${i}" class="field disp text-xl font-bold mt-1" maxlength="40" placeholder="Digite o nome" value="${esc(S.nomes[i] || '')}">
+      <h3 class="font-semibold mt-3">${esc(m.papel)}</h3>
+      <div class="mt-2">${m.itens.map((t, j) => `
+        <label class="task"><input type="checkbox" data-k="${i}-${j}" ${S.feitas[`${i}-${j}`] ? 'checked' : ''}><span>${esc(t)}</span></label>`).join('')}
+      </div>
+      <div class="flex justify-between text-sm mute mt-3 mb-1"><span id="cont${i}"></span></div>
+      <div class="bar" id="bar${i}"><i></i></div>
+    </article>`).join('');
+}
+
+function renderSemanas() {
+  $('#semanas').innerHTML = SEMANAS.map((s, i) => `
+    <article class="card week p-5 ${S.semana === i + 1 ? 'now' : ''}">
+      <p class="mute text-sm">Semana ${i + 1}</p>
+      <h3 class="text-xl font-bold mb-3">${esc(s.foco)}</h3>
+      <ul class="list-disc pl-5 space-y-1">${s.itens.map(t => `<li>${esc(t)}</li>`).join('')}</ul>
+      <button class="btn mt-4" data-w="${i + 1}" ${S.semana === i + 1 ? 'aria-pressed="true"' : ''}>${S.semana === i + 1 ? 'Estamos aqui' : 'Estamos aqui?'}</button>
+    </article>`).join('');
+}
+
+function renderAutores() {
+  const sel = $('#autor'), atual = sel.value;
+  sel.innerHTML = TEAM.map((_, i) => `<option value="${i}">${esc(nome(i))}</option>`).join('');
+  if (atual) sel.value = atual;
+}
+
+function renderNotas() {
+  $('#vazio').style.display = S.notas.length ? 'none' : 'block';
+  $('#notas').innerHTML = S.notas.map((n, k) => `
+    <li class="py-3 flex gap-3 justify-between" style="border-color:var(--line)">
+      <div><p><strong>${esc(nome(n.a))}</strong> <span class="mute text-sm">· ${new Date(n.d).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}</span></p>
+      <p>${esc(n.t)}</p></div>
+      <button class="btn text-sm self-start" data-del="${k}" aria-label="Apagar nota">Apagar</button>
+    </li>`).join('');
+}
+
+function renderTudo() {
+  renderEtapas(); renderTime(); renderSemanas(); renderAutores(); renderNotas(); renderProgresso();
+}
+
+// Eventos
+document.addEventListener('change', e => {
+  if (e.target.dataset.k) { S.feitas[e.target.dataset.k] = e.target.checked; salvar(); renderProgresso(); }
+});
+document.addEventListener('input', e => {
+  if (e.target.dataset.i !== undefined) {
+    S.nomes[+e.target.dataset.i] = e.target.value; salvar();
+    renderProgresso(); renderAutores(); renderNotas();
+  }
+});
+document.addEventListener('click', e => {
+  const w = e.target.closest('[data-w]');
+  if (w) { S.semana = +w.dataset.w; salvar(); renderSemanas(); }
+  const d = e.target.closest('[data-del]');
+  if (d) { S.notas.splice(+d.dataset.del, 1); salvar(); renderNotas(); }
+});
+function publicar() {
+  const t = $('#texto').value.trim();
+  if (!t) { $('#texto').focus(); return; }
+  S.notas.unshift({ a: +$('#autor').value, t, d: Date.now() });
+  $('#texto').value = ''; salvar(); renderNotas();
+}
+$('#publicar').addEventListener('click', publicar);
+$('#texto').addEventListener('keydown', e => { if (e.key === 'Enter') publicar(); });
+
+$('#exportar').addEventListener('click', () => {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(S, null, 2)], { type: 'application/json' }));
+  a.download = 'progresso-projeto.json'; a.click(); URL.revokeObjectURL(a.href);
+});
+$('#importar').addEventListener('change', e => {
+  const f = e.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try { S = Object.assign(base(), JSON.parse(r.result)); salvar(); renderTudo(); }
+    catch (err) { alert('Arquivo inválido. Escolha um arquivo exportado por este painel.'); }
+  };
+  r.readAsText(f); e.target.value = '';
+});
+$('#zerar').addEventListener('click', () => {
+  if (confirm('Apagar nomes, tarefas marcadas e notas deste navegador?')) { S = base(); salvar(); renderTudo(); }
+});
+
+// Tema
+const raiz = document.documentElement;
+let escuro = false;
+try { const t = localStorage.getItem(KEY + '-tema'); escuro = t ? t === 'escuro' : matchMedia('(prefers-color-scheme: dark)').matches; } catch (e) {}
+raiz.classList.toggle('dark', escuro);
+$('#tema').addEventListener('click', () => {
+  escuro = !escuro; raiz.classList.toggle('dark', escuro);
+  try { localStorage.setItem(KEY + '-tema', escuro ? 'escuro' : 'claro'); } catch (e) {}
+});
+
+renderTudo();
+</script>
+</body>
+</html>
