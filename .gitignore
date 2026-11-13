@@ -1,0 +1,8 @@
+# Dados baixados e tratados ficam só no computador de quem rodou (são grandes)
+dados/brutos/*
+dados/tratados/*
+!dados/brutos/.gitkeep
+!dados/tratados/.gitkeep
+__pycache__/
+*.pyc
+.venv/
