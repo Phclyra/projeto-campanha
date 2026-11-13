@@ -24,7 +24,6 @@ scripts/           código Python (config.py + 4 etapas numeradas)
 dados/brutos/      arquivos baixados do TSE (não vão para o GitHub)
 dados/tratados/    tabela final, depois da limpeza (não vai para o GitHub)
 resultados/        tabelas de indicadores e gráficos gerados
-docs/              painel de acompanhamento (GitHub Pages)
 ```
 
 ## Como rodar
