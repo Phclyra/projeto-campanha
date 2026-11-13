@@ -12,8 +12,8 @@ Projeto final da disciplina de Big Data.
 
 | Integrante | Função |
 |---|---|
-| 1 – *(nome)* | Coordenação, GitHub e infraestrutura |
-| 2 – *(nome)* | Limpeza, tratamento e junção das bases |
+| 1 – *(Pedro H)* | Coordenação, GitHub e infraestrutura |
+| 2 – *(Matheus Nunes)* | Limpeza, tratamento e junção das bases |
 | 3 – *(nome)* | Indicadores e análises estatísticas |
 | 4 – *(nome)* | Visualização, relatório e justificativa |
 
